@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Linkedin, Twitter, Link as LinkIcon, CheckCircle2 } from 'lucide-react';
+import { Facebook, Linkedin, Twitter, Link as LinkIcon, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface SocialShareProps {
@@ -9,6 +9,8 @@ export interface SocialShareProps {
   url?: string;
   /** Course title for pre-filled text */
   courseTitle?: string;
+  /** Custom text included in supported platform share dialogs */
+  shareText?: string;
   /** Size of buttons */
   size?: 'sm' | 'md' | 'lg';
   /** Show as icon-only or with text */
@@ -20,6 +22,7 @@ export interface SocialShareProps {
 export function SocialShare({
   url,
   courseTitle = 'a course',
+  shareText,
   size = 'md',
   variant = 'label',
   className,
@@ -30,10 +33,8 @@ export function SocialShare({
   const shareUrl = url || (typeof window !== 'undefined' ? window.location.href : '');
   const encodedUrl = encodeURIComponent(shareUrl);
 
-  const linkedInText = `I just completed ${courseTitle} on Hamplard!`;
-  const twitterText = `I just completed ${courseTitle} on Hamplard! ${shareUrl} #Hamplard`;
-  const encodedLinkedInText = encodeURIComponent(linkedInText);
-  const encodedTwitterText = encodeURIComponent(twitterText);
+  const achievementText = shareText ?? `I just completed ${courseTitle} on Hamplard! #Hamplard`;
+  const encodedAchievementText = encodeURIComponent(achievementText);
 
   const handleCopyLink = async () => {
     if (!shareUrl) return;
@@ -58,9 +59,18 @@ export function SocialShare({
   const handleTwitterShare = () => {
     if (!shareUrl) return;
     window.open(
-      `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTwitterText}`,
+      `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedAchievementText}`,
       '_blank',
       'noopener,noreferrer,width=550,height=420',
+    );
+  };
+
+  const handleFacebookShare = () => {
+    if (!shareUrl) return;
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedAchievementText}`,
+      '_blank',
+      'noopener,noreferrer,width=600,height=400',
     );
   };
 
@@ -111,6 +121,20 @@ export function SocialShare({
       >
         <Twitter className={iconSizes[size]} aria-hidden="true" />
         {variant === 'label' && <span>X</span>}
+      </button>
+
+      {/* Facebook Share Button */}
+      <button
+        type="button"
+        onClick={handleFacebookShare}
+        aria-label="Share on Facebook"
+        className={cn(
+          buttonClass,
+          'bg-[#1877F2] text-white hover:bg-[#0c63d4]',
+        )}
+      >
+        <Facebook className={iconSizes[size]} aria-hidden="true" />
+        {variant === 'label' && <span>Facebook</span>}
       </button>
 
       {/* Copy Link Button */}
